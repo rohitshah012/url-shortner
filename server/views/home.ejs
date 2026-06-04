@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkNest Dashboard</title>
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --ink: #172033;
+            --muted: #647086;
+            --line: #dfe5ee;
+            --accent: #0f766e;
+            --accent-dark: #115e59;
+            --warm: #f59e0b;
+            --danger-soft: #fff7ed;
+            --shadow: 0 18px 50px rgba(23, 32, 51, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--ink);
+            background:
+                linear-gradient(145deg, rgba(15, 118, 110, 0.1), transparent 36%),
+                linear-gradient(315deg, rgba(245, 158, 11, 0.12), transparent 34%),
+                var(--bg);
+        }
+
+        .page {
+            width: min(1120px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 26px 0 44px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 26px;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--ink);
+            font-size: 15px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .logo-mark {
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            border-radius: 8px;
+            color: #172033;
+            background: #fbbf24;
+            font-weight: 800;
+        }
+
+        .nav-link {
+            min-height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 14px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            color: var(--accent-dark);
+            background: rgba(255, 255, 255, 0.72);
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(310px, 0.9fr);
+            gap: 22px;
+            align-items: stretch;
+            margin-bottom: 22px;
+        }
+
+        .intro,
+        .shortener,
+        .result,
+        .table-section {
+            border: 1px solid rgba(223, 229, 238, 0.9);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.92);
+            box-shadow: var(--shadow);
+        }
+
+        .intro {
+            padding: 38px;
+            background:
+                linear-gradient(160deg, rgba(15, 118, 110, 0.96), rgba(23, 32, 51, 0.96)),
+                #0f766e;
+            color: #ffffff;
+        }
+
+        .eyebrow {
+            margin: 0 0 14px;
+            color: #fbbf24;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            max-width: 650px;
+            margin: 0 0 16px;
+            font-size: 42px;
+            line-height: 1.08;
+            letter-spacing: 0;
+        }
+
+        .intro p {
+            max-width: 640px;
+            margin: 0;
+            color: rgba(255, 255, 255, 0.78);
+            font-size: 17px;
+            line-height: 1.6;
+        }
+
+        .stat-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 34px;
+        }
+
+        .stat {
+            min-height: 86px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .stat strong {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 24px;
+        }
+
+        .stat span {
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 13px;
+        }
+
+        .shortener {
+            padding: 28px;
+        }
+
+        .shortener h2,
+        .table-section h2 {
+            margin: 0 0 10px;
+            font-size: 24px;
+            letter-spacing: 0;
+        }
+
+        .shortener p,
+        .table-heading p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        form {
+            display: grid;
+            gap: 14px;
+            margin-top: 24px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 800;
+            color: #263145;
+        }
+
+        input {
+            width: 100%;
+            min-height: 50px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 0 14px;
+            color: var(--ink);
+            font: inherit;
+            background: #fbfcfe;
+            outline: none;
+            transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
+        }
+
+        button {
+            min-height: 50px;
+            border: 0;
+            border-radius: 8px;
+            color: #ffffff;
+            background: var(--accent);
+            font: inherit;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+        }
+
+        button:hover {
+            background: var(--accent-dark);
+            box-shadow: 0 14px 28px rgba(15, 118, 110, 0.24);
+            transform: translateY(-1px);
+        }
+
+        .result {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 22px;
+            padding: 18px 20px;
+            border-color: rgba(15, 118, 110, 0.22);
+            background: #ecfdf5;
+        }
+
+        .result span {
+            color: var(--accent-dark);
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .result a {
+            color: var(--ink);
+            font-size: 20px;
+            font-weight: 800;
+            overflow-wrap: anywhere;
+            text-decoration: none;
+        }
+
+        .table-section {
+            padding: 26px;
+        }
+
+        .table-heading {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            min-height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 12px;
+            border-radius: 999px;
+            color: #7c2d12;
+            background: var(--danger-soft);
+            font-size: 13px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 720px;
+            border-collapse: collapse;
+            background: #ffffff;
+        }
+
+        th,
+        td {
+            padding: 15px 16px;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            color: #475569;
+            background: #f8fafc;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0;
+            text-transform: uppercase;
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+
+        td {
+            color: #263145;
+            font-size: 14px;
+        }
+
+        .short-id {
+            display: inline-flex;
+            align-items: center;
+            min-height: 30px;
+            padding: 0 10px;
+            border-radius: 8px;
+            color: var(--accent-dark);
+            background: #ccfbf1;
+            font-weight: 800;
+        }
+
+        .url-cell {
+            max-width: 420px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .empty-state {
+            padding: 34px;
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            color: var(--muted);
+            background: #ffffff;
+            text-align: center;
+        }
+
+        @media (max-width: 900px) {
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 34px;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .page {
+                width: min(100% - 24px, 1120px);
+                padding-top: 18px;
+            }
+
+            .topbar,
+            .table-heading {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .intro,
+            .shortener,
+            .table-section {
+                padding: 22px;
+            }
+
+            .stat-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <header class="topbar">
+            <a href="/" class="logo">
+                <span class="logo-mark">L</span>
+                <span>LinkNest</span>
+            </a>
+            <a href="/signup" class="nav-link">Create account</a>
+        </header>
+
+        <section class="hero">
+            <div class="intro">
+                <p class="eyebrow">URL shortener</p>
+                <h1>Short links that are easy to share and simple to track.</h1>
+                <p>Paste a long URL, generate a compact link, and monitor how many visits each shortcut receives.</p>
+
+                <div class="stat-row" aria-label="Dashboard summary">
+                    <div class="stat">
+                        <strong><%= locals.urls ? urls.length : 0 %></strong>
+                        <span>saved links</span>
+                    </div>
+                    <div class="stat">
+                        <strong><%= locals.urls ? urls.reduce((total, url) => total + url.VisitHistory.length, 0) : 0 %></strong>
+                        <span>total visits</span>
+                    </div>
+                    <div class="stat">
+                        <strong>8</strong>
+                        <span>characters per id</span>
+                    </div>
+                </div>
+            </div>
+
+            <section class="shortener" aria-labelledby="shortener-title">
+                <h2 id="shortener-title">Generate a short URL</h2>
+                <p>Use a complete link including <strong>https://</strong> for the best redirect behavior.</p>
+
+                <form method="POST" action="/url">
+                    <label for="urlshorting">Destination URL</label>
+                    <input type="url" name="url" placeholder="https://www.example.com" id="urlshorting" required>
+                    <button type="submit">Generate link</button>
+                </form>
+            </section>
+        </section>
+
+        <% if (locals.id) { %>
+            <section class="result" aria-label="Generated URL">
+                <span>URL generated</span>
+                <a href="/url/<%= id %>">http://localhost:8002/url/<%= id %></a>
+            </section>
+        <% } %>
+
+        <section class="table-section" aria-labelledby="history-title">
+            <div class="table-heading">
+                <div>
+                    <h2 id="history-title">Recent short links</h2>
+                    <p>Review saved destinations and visit counts.</p>
+                </div>
+                <span class="badge"><%= locals.urls ? urls.length : 0 %> links</span>
+            </div>
+
+            <% if (locals.urls && urls.length) { %>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>S. No.</th>
+                                <th>Short ID</th>
+                                <th>Redirect URL</th>
+                                <th>Visits</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% urls.forEach((url, index) => { %>
+                                <tr>
+                                    <td><%= index + 1 %></td>
+                                    <td><span class="short-id"><%= url.Shortid %></span></td>
+                                    <td class="url-cell" title="<%= url.RedirectUrl %>"><%= url.RedirectUrl %></td>
+                                    <td><%= url.VisitHistory.length %></td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <div class="empty-state">No short links yet. Generate your first one above.</div>
+            <% } %>
+        </section>
+    </main>
+</body>
+</html>
