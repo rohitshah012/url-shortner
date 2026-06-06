@@ -1,6 +1,8 @@
 const express = require("express");
 const { ConnectMongo } = require("./connection/connectMongo");
 const path = require("path");
+const cookieParser = require("cookie-parser");
+const {RestrictToLoginUserOnly} = require("./middlewares/auth");
 
 
 
@@ -20,6 +22,7 @@ ConnectMongo(mongoLink);
 // middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser()); 
 
 
 //ejs setup
@@ -28,7 +31,7 @@ app.set("views" , path.resolve("./views"));
 
 
 // Routes
-app.use("/url", urlRoute);
+app.use("/url", RestrictToLoginUserOnly, urlRoute);
 app.use("/user", userRoute)
 app.use("/", staticRoute);
 
