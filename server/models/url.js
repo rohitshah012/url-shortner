@@ -17,7 +17,11 @@ const urlschema = new mongoose.Schema({
             type: String,
             default: () => new Date().toLocaleString()
         }
-    }]
+    }],
+    Createdby : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "users"
+    }
 },
     { timestamps: true }
 )

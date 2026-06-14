@@ -2,7 +2,7 @@ const express = require("express");
 const { ConnectMongo } = require("./connection/connectMongo");
 const path = require("path");
 const cookieParser = require("cookie-parser");
-const {RestrictToLoginUserOnly} = require("./middlewares/auth");
+const {RestrictToLoginUserOnly, CheckAuth} = require("./middlewares/auth");
 
 
 
@@ -33,7 +33,7 @@ app.set("views" , path.resolve("./views"));
 // Routes
 app.use("/url", RestrictToLoginUserOnly, urlRoute);
 app.use("/user", userRoute)
-app.use("/", staticRoute);
+app.use("/", CheckAuth, staticRoute);
 
 
 
