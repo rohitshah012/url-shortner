@@ -1,5 +1,8 @@
 const jwt = require("jsonwebtoken");
-const secret = "RavanRohit";
+
+const dotenv = require ("dotenv");
+
+dotenv.config();
 
 
 function setuser(user) {
@@ -9,14 +12,14 @@ function setuser(user) {
         email: user.email,
         role: user.role,
     },
-        secret);
+        process.env.JWT_SECRET);
 }
 
 function getuser(Token) {
     if (!Token) return null
    
     try {
-         return jwt.verify(Token, secret)
+         return jwt.verify(Token, process.env.JWT_SECRET)
         
     } catch (error) {
         return null

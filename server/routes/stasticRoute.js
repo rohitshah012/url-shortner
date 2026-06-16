@@ -42,6 +42,7 @@ Router.get('/', restrictTo(["NORMAL", "ADMIN"]), async (req, res) => {
     return res.render("home", {
         urls: allurls,
         user: req.user,
+        baseUrl: `${req.protocol}://${req.get("host")}`,
     });
 });
 

@@ -20,7 +20,12 @@ async function handleGenerateNewShortURL(req, res) {
 
         const allurls = await URL.find({ Createdby: req.user._id });
 
-        return res.render("home", { id: shortId, urls: allurls, user: req.user })
+        return res.render("home", {
+            id: shortId,
+            urls: allurls,
+            user: req.user,
+            baseUrl: `${req.protocol}://${req.get("host")}`,
+        })
         // return res.status(201).json({ msg: `short url is created and Id is : ${shortId}` });
     } catch (error) {
         return res.status(500).json({ msg: "failed to create short url" });

@@ -4,6 +4,9 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const {CheckForAuthentication , restrictTo} = require("./middlewares/auth");
 
+const dotenv = require ("dotenv");
+dotenv.config();
+
 
 
 const urlRoute = require("./routes/urlRoute");
@@ -15,8 +18,8 @@ const app = express();
 
 
 // database connection
-const mongoLink = "mongodb://localhost:27017/urlshort";
-ConnectMongo(mongoLink);
+
+ConnectMongo();
 
 
 // middleware
@@ -40,6 +43,6 @@ app.use("/", staticRoute);
 
 
 //Port
-const PORT = 8002;
+const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => console.log(`your server is running at PORT : ${PORT} `));
+app.listen(PORT, () => console.log(`Your server is running at PORT : ${PORT} `));
