@@ -148,6 +148,23 @@
             gap: 8px;
         }
 
+        .field small {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .error-message {
+            padding: 12px 14px;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            color: #991b1b;
+            background: #fef2f2;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
         label {
             font-size: 14px;
             font-weight: 700;
@@ -270,19 +287,25 @@
                 <p>Set up your account and start shortening links right away.</p>
 
                 <form action="/user" method="POST">
+                    <% if (locals.error) { %>
+                        <div class="error-message"><%= error %></div>
+                    <% } %>
+
                     <div class="field">
                         <label for="name">Name</label>
-                        <input type="text" name="name" id="name" placeholder="Your name" autocomplete="name" required>
+                        <input type="text" name="name" id="name" placeholder="Your name" autocomplete="name" value="<%= locals.formData ? formData.name : '' %>" required>
                     </div>
 
                     <div class="field">
                         <label for="email">Email</label>
-                        <input type="email" name="email" id="email" placeholder="you@example.com" autocomplete="email" required>
+                        <input type="email" name="email" id="email" placeholder="you@gmail.com" autocomplete="email" pattern="[A-Za-z0-9._%+\-]+@gmail\.com" title="Email must end with @gmail.com" value="<%= locals.formData ? formData.email : '' %>" required>
+                        <small>Use a valid Gmail address ending with @gmail.com.</small>
                     </div>
 
                     <div class="field">
                         <label for="password">Password</label>
-                        <input type="password" name="password" id="password" placeholder="Create a password" autocomplete="new-password" required>
+                        <input type="password" name="password" id="password" placeholder="Create a password" autocomplete="new-password" minlength="8" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}" title="Password must be at least 8 characters and include uppercase, lowercase, number, and symbol." required>
+                        <small>At least 8 characters with uppercase, lowercase, number, and symbol.</small>
                     </div>
 
                     <button type="submit">Create account</button>

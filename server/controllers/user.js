@@ -5,14 +5,35 @@ const { setuser, getuser } = require("../service/auth");
 
 const { v4: uuidv4 } = require('uuid');
 
+const gmailRegex = /^[A-Za-z0-9._%+-]+@gmail\.com$/;
+const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+
 async function handleUserSignup(req, res) {
 
     const { name, email, password } = req.body;
+    const formData = {
+        name,
+        email,
+    };
+
+    if (!gmailRegex.test(email)) {
+        return res.render("signup", {
+            error: "Email must be a valid Gmail address ending with @gmail.com.",
+            formData,
+        });
+    }
+
+    if (!strongPasswordRegex.test(password)) {
+        return res.render("signup", {
+            error: "Password must be at least 8 characters and include uppercase, lowercase, number, and symbol.",
+            formData,
+        });
+    }
 
     await User.create({
         name,
         email,
-        password
+        password,
     })
 
     const allurls = await URL.find({});
