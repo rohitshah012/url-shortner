@@ -20,7 +20,7 @@ const urlschema = new mongoose.Schema({
     }],
     Createdby : {
         type : mongoose.Schema.Types.ObjectId,
-        ref : "users"
+        ref : "user"
     }
 },
     { timestamps: true }

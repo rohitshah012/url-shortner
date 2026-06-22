@@ -371,6 +371,34 @@
             text-align: center;
         }
 
+        .action-cell {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .delete-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            min-height: 32px;
+            padding: 0 8px;
+            border: 1px solid #fecaca;
+            border-radius: 6px;
+            background: #fef2f2;
+            color: #991b1b;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 12px;
+            transition: all 160ms ease;
+        }
+
+        .delete-btn:hover {
+            background: #fee2e2;
+            border-color: #fca5a5;
+        }
+
         @media (max-width: 900px) {
             .hero {
                 grid-template-columns: 1fr;
@@ -487,6 +515,7 @@
                                 <th>Short ID</th>
                                 <th>Redirect URL</th>
                                 <th>Visits</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -500,6 +529,9 @@
                                     </td>
                                     <td class="url-cell" title="<%= url.RedirectUrl %>"><%= url.RedirectUrl %></td>
                                     <td><%= url.VisitHistory.length %></td>
+                                    <td class="action-cell">
+                                        <button class="delete-btn" onclick="deleteURL('<%= url.Shortid %>')">Delete</button>
+                                    </td>
                                 </tr>
                             <% }) %>
                         </tbody>
@@ -510,5 +542,28 @@
             <% } %>
         </section>
     </main>
+
+    <script>
+        function deleteURL(shortId) {
+            if (!confirm('Are you sure you want to delete this short URL?')) {
+                return;
+            }
+
+            fetch(`/url/${shortId}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to delete URL');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error deleting URL');
+            });
+        }
+    </script>
 </body>
 </html>

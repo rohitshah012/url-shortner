@@ -18,15 +18,8 @@ async function handleGenerateNewShortURL(req, res) {
             Createdby : req.user._id
         });
 
-        const allurls = await URL.find({ Createdby: req.user._id });
-
-        return res.render("home", {
-            id: shortId,
-            urls: allurls,
-            user: req.user,
-            baseUrl: `${req.protocol}://${req.get("host")}`,
-        })
-        // return res.status(201).json({ msg: `short url is created and Id is : ${shortId}` });
+        // Redirect to home page instead of rendering to avoid form resubmission on refresh
+        return res.redirect("/");
     } catch (error) {
         return res.status(500).json({ msg: "failed to create short url" });
     }
@@ -99,9 +92,35 @@ async function handleShowAllShortUrl(req, res) {
         return res.status(500).json({ msg: "failed to fetch short urls" });
     }
 }
+
+
+async function handleDeleteShortURL(req, res) {
+    const shortId = req.params.nanoid;
+
+    try {
+        const url = await URL.findOne({ Shortid: shortId });
+
+        if (!url) {
+            return res.status(404).json({ msg: "Short URL not found" });
+        }
+
+        // Check if the user owns this URL
+        if (url.Createdby.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ msg: "You don't have permission to delete this URL" });
+        }
+
+        await URL.deleteOne({ Shortid: shortId });
+
+        return res.redirect("/");
+    } catch (error) {
+        return res.status(500).json({ msg: "Failed to delete short URL" });
+    }
+}
+
 module.exports = {
     handleGenerateNewShortURL,
     handleShowUrlAnalytics,
     handleRedirectUrl,
     handleShowAllShortUrl,
+    handleDeleteShortURL,
 };

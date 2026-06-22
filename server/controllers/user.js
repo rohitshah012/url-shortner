@@ -1,9 +1,7 @@
 const { User } = require("../models/user");
 const { URL } = require("../models/url");
 const { setuser, getuser } = require("../service/auth");
-
-
-const { v4: uuidv4 } = require('uuid');
+const bcrypt = require('bcrypt');
 
 const gmailRegex = /^[A-Za-z0-9._%+-]+@gmail\.com$/;
 const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
@@ -15,6 +13,14 @@ async function handleUserSignup(req, res) {
         name,
         email,
     };
+
+    // Validate required fields
+    if (!name || !email || !password) {
+        return res.render("signup", {
+            error: "All fields are required.",
+            formData,
+        });
+    }
 
     if (!gmailRegex.test(email)) {
         return res.render("signup", {
@@ -30,48 +36,118 @@ async function handleUserSignup(req, res) {
         });
     }
 
-    await User.create({
-        name,
-        email,
-        password,
-    })
+    try {
+        // Check if user already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.render("signup", {
+                error: "Email already registered. Please use a different email.",
+                formData,
+            });
+        }
 
-    const allurls = await URL.find({});
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-    return res.redirect("/")
+        await User.create({
+            name,
+            email,
+            password: hashedPassword,
+        });
+
+        return res.redirect("/user/login");
+    } catch (error) {
+        return res.render("signup", {
+            error: "Error during signup. Please try again.",
+            formData,
+        });
+    }
 }
 async function handleUserLogin(req, res) {
 
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email, password });
+    // Validate required fields
+    if (!email || !password) {
+        return res.render("login", { 
+            error: "Email and password are required.",
+            email: email || "",
+        });
+    }
 
-    if (!user)
-        return res.render("login", { error: " invalid email or password " })
+    try {
+        const user = await User.findOne({ email });
 
-  
+        if (!user) {
+            return res.render("login", { 
+                error: "Invalid email or password",
+                email: email || "",
+            });
+        }
 
-    const Token = setuser(user);
+        // Compare password with hashed password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    res.cookie("uid", Token)
+        if (!isPasswordValid) {
+            return res.render("login", { 
+                error: "Invalid email or password",
+                email: email || "",
+            });
+        }
 
+        const Token = setuser(user);
+        res.cookie("uid", Token);
 
-    return res.redirect("/")
+        return res.redirect("/");
+    } catch (error) {
+        return res.render("login", { 
+            error: "Error during login. Please try again.",
+            email: email || "",
+        });
+    }
 }
 
 async function handleAdminLogin(req, res) {
     const { email, password } = req.body;
 
-    const admin = await User.findOne({ email, password });
-
-    if (!admin || admin.role !== "ADMIN") {
-        return res.render("login", { error: "Invalid email, password, or not an admin" });
+    // Validate required fields
+    if (!email || !password) {
+        return res.render("login", { 
+            error: "Email and password are required.",
+            email: email || "",
+        });
     }
 
-    const Token = setuser(admin);
-    res.cookie("uid", Token);
+    try {
+        const admin = await User.findOne({ email });
 
-    return res.redirect("/admin/urls");
+        if (!admin || admin.role !== "ADMIN") {
+            return res.render("login", { 
+                error: "Invalid email, password, or not an admin",
+                email: email || "",
+            });
+        }
+
+        // Compare password with hashed password
+        const isPasswordValid = await bcrypt.compare(password, admin.password);
+
+        if (!isPasswordValid) {
+            return res.render("login", { 
+                error: "Invalid email, password, or not an admin",
+                email: email || "",
+            });
+        }
+
+        const Token = setuser(admin);
+        res.cookie("uid", Token);
+
+        return res.redirect("/admin/urls");
+    } catch (error) {
+        return res.render("login", { 
+            error: "Error during admin login. Please try again.",
+            email: email || "",
+        });
+    }
 }
 
 module.exports = {
