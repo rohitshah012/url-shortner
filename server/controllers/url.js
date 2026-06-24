@@ -1,27 +1,47 @@
 const { URL } = require("../models/url");
 const { nanoid } = require("nanoid");
+const { URL: NodeURL } = require("url");
 
 async function handleGenerateNewShortURL(req, res) {
-    const body = req.body;
+    const rawUrl = req.body.url?.trim();
 
-    if (!body.url) {
-        return res.status(400).json({ msg: "url is required" });
+    if (!rawUrl) {
+        return res.status(400).render("home", {
+            error: "A destination URL is required.",
+            urls: [],
+            user: req.user,
+            baseUrl: `${req.protocol}://${req.get("host")}`,
+        });
     }
 
     try {
+        const destination = new NodeURL(rawUrl);
+        if (!["http:", "https:"].includes(destination.protocol)) {
+            throw new Error("Unsupported URL protocol");
+        }
+
         const shortId = nanoid(8);
 
         await URL.create({
             Shortid: shortId,
-            RedirectUrl: body.url,
+            RedirectUrl: destination.toString(),
             VisitHistory: [],
             Createdby : req.user._id
         });
 
-        // Redirect to home page instead of rendering to avoid form resubmission on refresh
-        return res.redirect("/");
+        return res.redirect(`/?created=${encodeURIComponent(shortId)}`);
     } catch (error) {
-        return res.status(500).json({ msg: "failed to create short url" });
+        if (error.message === "Invalid URL" || error.message === "Unsupported URL protocol") {
+            const urls = await URL.find({ Createdby: req.user._id }).sort({ createdAt: -1 });
+            return res.status(400).render("home", {
+                error: "Enter a valid URL beginning with http:// or https://.",
+                urls,
+                user: req.user,
+                baseUrl: `${req.protocol}://${req.get("host")}`,
+            });
+        }
+
+        return res.status(500).send("Failed to create the short URL.");
     }
 }
 
@@ -29,7 +49,12 @@ async function handleShowUrlAnalytics(req, res) {
     const shortId = req.params.nanoid;
 
     try {
-        const Result = await URL.findOne({ Shortid: shortId });
+        const query = { Shortid: shortId };
+        if (req.user.role !== "ADMIN") {
+            query.Createdby = req.user._id;
+        }
+
+        const Result = await URL.findOne(query);
 
         if (!Result) {
             return res.status(404).json({ msg: "short url not found in Database " });
@@ -55,7 +80,7 @@ async function handleRedirectUrl(req, res) {
             {
                 $push: {
                     VisitHistory: {
-                        timestamp: new Date().toLocaleString(),
+                        timestamp: new Date(),
                     },
                 },
             },
@@ -75,11 +100,8 @@ async function handleRedirectUrl(req, res) {
 
 async function handleShowAllShortUrl(req, res) {
     try {
-        const allShortUrls = await URL.find({});
-
-        if (!allShortUrls || allShortUrls.length === 0) {
-            return res.status(404).json({ msg: "no short urls found" });
-        }
+        const query = req.user.role === "ADMIN" ? {} : { Createdby: req.user._id };
+        const allShortUrls = await URL.find(query).sort({ createdAt: -1 });
 
         const urlList = allShortUrls.map(url => ({
             shortId: url.Shortid,
@@ -105,13 +127,14 @@ async function handleDeleteShortURL(req, res) {
         }
 
         // Check if the user owns this URL
-        if (url.Createdby.toString() !== req.user._id.toString()) {
+        const isOwner = url.Createdby?.toString() === req.user._id.toString();
+        if (req.user.role !== "ADMIN" && !isOwner) {
             return res.status(403).json({ msg: "You don't have permission to delete this URL" });
         }
 
         await URL.deleteOne({ Shortid: shortId });
 
-        return res.redirect("/");
+        return res.status(204).end();
     } catch (error) {
         return res.status(500).json({ msg: "Failed to delete short URL" });
     }

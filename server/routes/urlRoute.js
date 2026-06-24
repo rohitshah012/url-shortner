@@ -1,4 +1,5 @@
 const express = require("express");
+const { restrictTo } = require("../middlewares/auth");
 
 const Router = express.Router();
 
@@ -11,11 +12,12 @@ const {
 } = require("../controllers/url");
 
 
-Router.get('/', handleShowAllShortUrl);
-Router.get('/:nanoid', handleRedirectUrl);
-Router.get("/analytics/:nanoid", handleShowUrlAnalytics);
-Router.delete("/:nanoid", handleDeleteShortURL);
+Router.get("/", restrictTo(["NORMAL", "ADMIN"]), handleShowAllShortUrl);
+Router.post("/", restrictTo(["NORMAL", "ADMIN"]), handleGenerateNewShortURL);
+Router.get("/analytics/:nanoid", restrictTo(["NORMAL", "ADMIN"]), handleShowUrlAnalytics);
+Router.delete("/:nanoid", restrictTo(["NORMAL", "ADMIN"]), handleDeleteShortURL);
 
-Router.post("/", handleGenerateNewShortURL);
+// Redirects must stay public so shortened links can be shared.
+Router.get("/:nanoid", handleRedirectUrl);
 
 module.exports = Router;

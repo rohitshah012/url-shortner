@@ -1,52 +1,70 @@
 const { User } = require("../models/user");
-const { URL } = require("../models/url");
-const { setuser, getuser } = require("../service/auth");
-const bcrypt = require('bcrypt');
+const { setuser } = require("../service/auth");
+const bcrypt = require("bcrypt");
 
-const gmailRegex = /^[A-Za-z0-9._%+-]+@gmail\.com$/;
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
-async function handleUserSignup(req, res) {
+const cookieOptions = {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+};
 
-    const { name, email, password } = req.body;
-    const formData = {
-        name,
-        email,
-    };
+function renderSignup(res, status, error, formData = {}) {
+    return res.status(status).render("signup", { error, formData });
+}
 
-    // Validate required fields
-    if (!name || !email || !password) {
-        return res.render("signup", {
-            error: "All fields are required.",
-            formData,
-        });
+function renderLogin(res, status, error, email = "", mode = "user") {
+    return res.status(status).render("login", { error, email, mode });
+}
+
+async function verifyPasswordAndUpgrade(user, password) {
+    const usesBcrypt = /^\$2[aby]\$\d{2}\$/.test(user.password);
+
+    if (usesBcrypt) {
+        return bcrypt.compare(password, user.password);
     }
 
-    if (!gmailRegex.test(email)) {
-        return res.render("signup", {
-            error: "Email must be a valid Gmail address ending with @gmail.com.",
-            formData,
-        });
+    if (user.password !== password) {
+        return false;
+    }
+
+    user.password = await bcrypt.hash(password, 10);
+    await user.save();
+    return true;
+}
+
+async function handleUserSignup(req, res) {
+    const name = req.body.name?.trim();
+    const email = req.body.email?.trim().toLowerCase();
+    const { password } = req.body;
+    const formData = { name: name || "", email: email || "" };
+
+    if (!name || !email || !password) {
+        return renderSignup(res, 400, "All fields are required.", formData);
+    }
+
+    if (!emailRegex.test(email)) {
+        return renderSignup(res, 400, "Enter a valid email address.", formData);
     }
 
     if (!strongPasswordRegex.test(password)) {
-        return res.render("signup", {
-            error: "Password must be at least 8 characters and include uppercase, lowercase, number, and symbol.",
-            formData,
-        });
+        return renderSignup(
+            res,
+            400,
+            "Password must be at least 8 characters and include uppercase, lowercase, number, and symbol.",
+            formData
+        );
     }
 
     try {
-        // Check if user already exists
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.render("signup", {
-                error: "Email already registered. Please use a different email.",
-                formData,
-            });
+            return renderSignup(res, 409, "Email already registered. Please log in.", formData);
         }
 
-        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
         await User.create({
@@ -55,103 +73,71 @@ async function handleUserSignup(req, res) {
             password: hashedPassword,
         });
 
-        return res.redirect("/user/login");
+        return res.redirect("/login?registered=1");
     } catch (error) {
-        return res.render("signup", {
-            error: "Error during signup. Please try again.",
-            formData,
-        });
+        if (error?.code === 11000) {
+            return renderSignup(res, 409, "Email already registered. Please log in.", formData);
+        }
+
+        console.error("Signup error:", error);
+        return renderSignup(res, 500, "Unable to create your account right now.", formData);
     }
 }
+
 async function handleUserLogin(req, res) {
+    const email = req.body.email?.trim().toLowerCase();
+    const { password } = req.body;
 
-    const { email, password } = req.body;
-
-    // Validate required fields
     if (!email || !password) {
-        return res.render("login", { 
-            error: "Email and password are required.",
-            email: email || "",
-        });
+        return renderLogin(res, 400, "Email and password are required.", email);
     }
 
     try {
         const user = await User.findOne({ email });
 
-        if (!user) {
-            return res.render("login", { 
-                error: "Invalid email or password",
-                email: email || "",
-            });
+        if (!user || !(await verifyPasswordAndUpgrade(user, password))) {
+            return renderLogin(res, 401, "Invalid email or password.", email);
         }
 
-        // Compare password with hashed password
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        res.cookie("uid", setuser(user), cookieOptions);
 
-        if (!isPasswordValid) {
-            return res.render("login", { 
-                error: "Invalid email or password",
-                email: email || "",
-            });
-        }
-
-        const Token = setuser(user);
-        res.cookie("uid", Token);
-
-        return res.redirect("/");
+        return res.redirect(user.role === "ADMIN" ? "/admin/urls" : "/");
     } catch (error) {
-        return res.render("login", { 
-            error: "Error during login. Please try again.",
-            email: email || "",
-        });
+        console.error("Login error:", error);
+        return renderLogin(res, 500, "Unable to log in right now.", email);
     }
 }
 
 async function handleAdminLogin(req, res) {
-    const { email, password } = req.body;
+    const email = req.body.email?.trim().toLowerCase();
+    const { password } = req.body;
 
-    // Validate required fields
     if (!email || !password) {
-        return res.render("login", { 
-            error: "Email and password are required.",
-            email: email || "",
-        });
+        return renderLogin(res, 400, "Email and password are required.", email, "admin");
     }
 
     try {
         const admin = await User.findOne({ email });
 
         if (!admin || admin.role !== "ADMIN") {
-            return res.render("login", { 
-                error: "Invalid email, password, or not an admin",
-                email: email || "",
-            });
+            return renderLogin(res, 401, "Invalid admin credentials.", email, "admin");
         }
 
-        // Compare password with hashed password
-        const isPasswordValid = await bcrypt.compare(password, admin.password);
-
-        if (!isPasswordValid) {
-            return res.render("login", { 
-                error: "Invalid email, password, or not an admin",
-                email: email || "",
-            });
+        if (!(await verifyPasswordAndUpgrade(admin, password))) {
+            return renderLogin(res, 401, "Invalid admin credentials.", email, "admin");
         }
 
-        const Token = setuser(admin);
-        res.cookie("uid", Token);
+        res.cookie("uid", setuser(admin), cookieOptions);
 
         return res.redirect("/admin/urls");
     } catch (error) {
-        return res.render("login", { 
-            error: "Error during admin login. Please try again.",
-            email: email || "",
-        });
+        console.error("Admin login error:", error);
+        return renderLogin(res, 500, "Unable to log in right now.", email, "admin");
     }
 }
 
 module.exports = {
     handleUserSignup,
     handleUserLogin,
-    handleAdminLogin
-}
+    handleAdminLogin,
+};

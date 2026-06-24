@@ -14,13 +14,14 @@ const urlschema = new mongoose.Schema({
     },
     VisitHistory: [{
         timestamp: {
-            type: String,
-            default: () => new Date().toLocaleString()
+            type: Date,
+            default: Date.now
         }
     }],
     Createdby : {
         type : mongoose.Schema.Types.ObjectId,
-        ref : "user"
+        ref : "user",
+        required: true
     }
 },
     { timestamps: true }

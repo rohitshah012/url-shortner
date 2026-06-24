@@ -1,57 +1,44 @@
 const { getuser } = require("../service/auth");
+const { User } = require("../models/user");
 
-function CheckForAuthentication(req, res, next) {
-    const TokenCookie = req.cookies?.uid;
-
+async function CheckForAuthentication(req, res, next) {
+    const token = req.cookies?.uid;
     req.user = null;
 
-    if (!TokenCookie) return next()
+    if (!token) return next();
 
-
-    const Token = TokenCookie;
-
-    const user = getuser(Token);
-
-    req.user = user;
-
-    return next()
-
-}
-
-function restrictTo(role = []) {
-    return function (req, res, next) {
-        if (!req.user) return res.redirect("/login")
-
-        if (!role.includes(req.user.role)) return res.end("UnAuthorized")
-
+    const payload = getuser(token);
+    if (!payload) {
+        res.clearCookie("uid");
         return next();
     }
+
+    try {
+        req.user = await User.findById(payload._id).select("_id name email role");
+        if (!req.user) {
+            res.clearCookie("uid");
+        }
+        return next();
+    } catch (error) {
+        return next(error);
+    }
 }
-// async function RestrictToLoginUserOnly(req, res, next) {
 
-//     const userUid = req.cookies?.uid;
+function restrictTo(roles = []) {
+    return function (req, res, next) {
+        if (!req.user) {
+            return res.redirect(`/login?next=${encodeURIComponent(req.originalUrl)}`);
+        }
 
-//     if (!userUid) return res.redirect("/login");
+        if (!roles.includes(req.user.role)) {
+            return res.status(403).send("You are not authorized to view this page.");
+        }
 
-//     const user = getuser(userUid)
-
-//     if (!user) return res.redirect('/login')
-
-//     req.user = user;
-
-//     next();
-// }
-// async function CheckAuth(req, res, next) {
-//       const userUid = req.cookies?.uid;
-//     const user = getuser(userUid)
-//     req.user = user;
-//     next();
-// }
-
-
+        return next();
+    };
+}
 
 module.exports = {
     CheckForAuthentication,
     restrictTo,
-
-}
+};

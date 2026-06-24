@@ -3,319 +3,473 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign up | LinkNest</title>
+    <meta name="description" content="Create your free Linkly account.">
+    <title>Create an account — Linkly</title>
     <style>
         :root {
-            --bg: #f5f7fb;
-            --surface: #ffffff;
-            --ink: #172033;
-            --muted: #647086;
-            --line: #dfe5ee;
-            --accent: #0f766e;
-            --accent-dark: #115e59;
-            --warm: #f59e0b;
-            --shadow: 0 22px 60px rgba(23, 32, 51, 0.12);
+            --navy: #101828;
+            --ink: #344054;
+            --muted: #667085;
+            --line: #e4e7ec;
+            --brand: #6941c6;
+            --brand-dark: #53389e;
+            --brand-soft: #f4f3ff;
+            --cyan: #12b7c4;
+            --success: #067647;
+            --success-soft: #ecfdf3;
+            --danger: #b42318;
+            --danger-soft: #fef3f2;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
             min-height: 100vh;
-            font-family: Arial, Helvetica, sans-serif;
-            color: var(--ink);
-            background:
-                linear-gradient(135deg, rgba(15, 118, 110, 0.12), transparent 42%),
-                linear-gradient(315deg, rgba(245, 158, 11, 0.12), transparent 38%),
-                var(--bg);
+            color: var(--navy);
+            background: #ffffff;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            -webkit-font-smoothing: antialiased;
         }
+
+        button, input { font: inherit; }
 
         .page {
             min-height: 100vh;
             display: grid;
-            place-items: center;
-            padding: 32px 18px;
-        }
-
-        .signup-shell {
-            width: min(960px, 100%);
-            display: grid;
-            grid-template-columns: 1fr 430px;
-            overflow: hidden;
-            border: 1px solid rgba(223, 229, 238, 0.85);
-            border-radius: 8px;
-            background: var(--surface);
-            box-shadow: var(--shadow);
-        }
-
-        .brand-panel {
-            padding: 48px;
-            background:
-                linear-gradient(160deg, rgba(15, 118, 110, 0.96), rgba(23, 32, 51, 0.96)),
-                #0f766e;
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            gap: 38px;
-        }
-
-        .logo {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 15px;
-            font-weight: 700;
-            letter-spacing: 0;
-        }
-
-        .logo-mark {
-            width: 34px;
-            height: 34px;
-            display: grid;
-            place-items: center;
-            border-radius: 8px;
-            color: #172033;
-            background: #fbbf24;
-            font-weight: 800;
-        }
-
-        .brand-panel h1 {
-            max-width: 430px;
-            margin: 0 0 14px;
-            font-size: 42px;
-            line-height: 1.08;
-            letter-spacing: 0;
-        }
-
-        .brand-panel p {
-            max-width: 460px;
-            margin: 0;
-            color: rgba(255, 255, 255, 0.78);
-            font-size: 17px;
-            line-height: 1.6;
-        }
-
-        .metric-row {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-        }
-
-        .metric {
-            padding: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .metric strong {
-            display: block;
-            margin-bottom: 4px;
-            font-size: 22px;
-        }
-
-        .metric span {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 13px;
+            grid-template-columns: minmax(520px, 1.08fr) minmax(430px, 0.92fr);
         }
 
         .form-panel {
-            padding: 48px;
-        }
-
-        .form-panel h2 {
-            margin: 0 0 10px;
-            font-size: 30px;
-            letter-spacing: 0;
-        }
-
-        .form-panel p {
-            margin: 0 0 30px;
-            color: var(--muted);
-            line-height: 1.5;
-        }
-
-        form {
             display: grid;
-            gap: 18px;
+            place-items: center;
+            padding: 44px 28px;
+            background:
+                radial-gradient(circle at 5% 5%, rgba(18, 183, 196, 0.07), transparent 22%),
+                #ffffff;
+        }
+
+        .form-shell {
+            width: min(460px, 100%);
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            margin-bottom: 44px;
+            color: var(--navy);
+            font-size: 21px;
+            font-weight: 850;
+            letter-spacing: -0.04em;
+            text-decoration: none;
+        }
+
+        .brand-mark {
+            width: 40px;
+            height: 40px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--brand), var(--cyan));
+            box-shadow: 0 10px 24px rgba(105, 65, 198, 0.23);
+        }
+
+        .brand-mark svg { width: 22px; height: 22px; }
+
+        .welcome {
+            margin-bottom: 28px;
+        }
+
+        .welcome h1 {
+            margin: 0;
+            font-size: 38px;
+            line-height: 1.08;
+            letter-spacing: -0.05em;
+        }
+
+        .welcome p {
+            margin: 12px 0 0;
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .notice {
+            margin-bottom: 19px;
+            border: 1px solid #fecdca;
+            border-radius: 11px;
+            padding: 12px 14px;
+            color: var(--danger);
+            background: var(--danger-soft);
+            font-size: 13px;
+            font-weight: 650;
+            line-height: 1.45;
+        }
+
+        .signup-form {
+            display: grid;
+            gap: 17px;
         }
 
         .field {
             display: grid;
-            gap: 8px;
+            gap: 7px;
         }
 
-        .field small {
-            color: var(--muted);
-            font-size: 12px;
-            line-height: 1.4;
+        .field-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
         }
 
-        .error-message {
-            padding: 12px 14px;
-            border: 1px solid #fecaca;
-            border-radius: 8px;
-            color: #991b1b;
-            background: #fef2f2;
-            font-size: 14px;
-            font-weight: 700;
-            line-height: 1.4;
-        }
-
-        label {
-            font-size: 14px;
-            font-weight: 700;
-            color: #263145;
-        }
-
-        input {
-            width: 100%;
-            min-height: 48px;
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            padding: 0 14px;
+        .field label {
             color: var(--ink);
-            font: inherit;
-            background: #fbfcfe;
-            outline: none;
-            transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+            font-size: 13px;
+            font-weight: 750;
         }
 
-        input:focus {
-            border-color: var(--accent);
+        .field-hint {
+            color: #98a2b3;
+            font-size: 11px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            width: 19px;
+            height: 19px;
+            color: #98a2b3;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .field input {
+            width: 100%;
+            min-height: 52px;
+            border: 1px solid #d0d5dd;
+            border-radius: 11px;
+            padding: 0 46px;
+            color: var(--navy);
             background: #ffffff;
-            box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
+            outline: none;
+            transition: border 160ms ease, box-shadow 160ms ease;
         }
 
-        button {
-            min-height: 50px;
+        .field input:focus {
+            border-color: var(--brand);
+            box-shadow: 0 0 0 4px rgba(105, 65, 198, 0.11);
+        }
+
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 11px;
             border: 0;
-            border-radius: 8px;
+            padding: 7px;
+            color: var(--muted);
+            background: transparent;
+            font-size: 12px;
+            font-weight: 750;
+            cursor: pointer;
+            transform: translateY(-50%);
+        }
+
+        .password-rules {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 7px 12px;
+            margin-top: 2px;
+        }
+
+        .rule {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #98a2b3;
+            font-size: 10px;
+        }
+
+        .rule::before {
+            content: "✓";
+            width: 15px;
+            height: 15px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            color: var(--success);
+            background: var(--success-soft);
+            font-size: 9px;
+            font-weight: 900;
+        }
+
+        .submit-button {
+            min-height: 52px;
+            margin-top: 3px;
+            border: 0;
+            border-radius: 11px;
             color: #ffffff;
-            background: var(--accent);
-            font: inherit;
+            background: linear-gradient(100deg, var(--brand), #7f56d9);
             font-weight: 800;
             cursor: pointer;
-            transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+            box-shadow: 0 12px 24px rgba(105, 65, 198, 0.24);
+            transition: transform 160ms ease, box-shadow 160ms ease;
         }
 
-        button:hover {
-            background: var(--accent-dark);
-            box-shadow: 0 14px 28px rgba(15, 118, 110, 0.24);
+        .submit-button:hover {
             transform: translateY(-1px);
+            box-shadow: 0 16px 28px rgba(105, 65, 198, 0.31);
         }
 
-        .footer-link {
-            margin-top: 22px;
+        .login-link {
+            margin: 24px 0 0;
             color: var(--muted);
-            font-size: 14px;
+            font-size: 13px;
             text-align: center;
         }
 
-        .footer-link a {
-            color: var(--accent-dark);
-            font-weight: 700;
+        .login-link a {
+            color: var(--brand);
+            font-weight: 750;
             text-decoration: none;
         }
 
-        @media (max-width: 820px) {
-            .signup-shell {
-                grid-template-columns: 1fr;
-            }
-
-            .brand-panel,
-            .form-panel {
-                padding: 32px;
-            }
-
-            .brand-panel h1 {
-                font-size: 34px;
-            }
+        .visual-panel {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px clamp(42px, 6vw, 82px);
+            color: #ffffff;
+            background:
+                radial-gradient(circle at 80% 15%, rgba(18, 183, 196, 0.34), transparent 25%),
+                radial-gradient(circle at 15% 88%, rgba(255, 255, 255, 0.1), transparent 24%),
+                linear-gradient(145deg, #292056, #53389e 54%, #087f8c 125%);
         }
 
-        @media (max-width: 520px) {
-            .page {
-                padding: 18px 12px;
-            }
+        .visual-panel::after {
+            content: "";
+            position: absolute;
+            width: 390px;
+            height: 390px;
+            right: -230px;
+            bottom: -150px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 50%;
+            box-shadow: 0 0 0 55px rgba(255, 255, 255, 0.035), 0 0 0 110px rgba(255, 255, 255, 0.02);
+        }
 
-            .brand-panel,
+        .visual-content {
+            position: relative;
+            z-index: 2;
+            max-width: 530px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 999px;
+            padding: 7px 12px;
+            color: rgba(255, 255, 255, 0.86);
+            background: rgba(255, 255, 255, 0.08);
+            font-size: 12px;
+            font-weight: 750;
+        }
+
+        .eyebrow span {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #5fe7d8;
+        }
+
+        .visual-content h2 {
+            margin: 0;
+            font-size: clamp(42px, 5vw, 66px);
+            line-height: 1;
+            letter-spacing: -0.06em;
+        }
+
+        .visual-content > p {
+            margin: 23px 0 35px;
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 17px;
+            line-height: 1.7;
+        }
+
+        .benefits {
+            display: grid;
+            gap: 14px;
+        }
+
+        .benefit {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            color: rgba(255, 255, 255, 0.87);
+            font-size: 14px;
+            font-weight: 650;
+        }
+
+        .benefit-icon {
+            width: 29px;
+            height: 29px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 9px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .quote-card {
+            margin-top: 42px;
+            border: 1px solid rgba(255, 255, 255, 0.17);
+            border-radius: 16px;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.75);
+            background: rgba(255, 255, 255, 0.08);
+            font-size: 13px;
+            line-height: 1.65;
+            backdrop-filter: blur(12px);
+        }
+
+        .quote-card strong {
+            display: block;
+            margin-top: 12px;
+            color: #ffffff;
+            font-size: 12px;
+        }
+
+        @media (max-width: 920px) {
+            .page { grid-template-columns: 1fr; }
+            .visual-panel { display: none; }
+            .form-panel { min-height: 100vh; }
+        }
+
+        @media (max-width: 480px) {
             .form-panel {
-                padding: 24px;
+                align-items: start;
+                padding: 28px 20px;
             }
 
-            .metric-row {
-                grid-template-columns: 1fr;
-            }
+            .brand { margin-bottom: 35px; }
+            .welcome h1 { font-size: 32px; }
+            .password-rules { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
     <main class="page">
-        <section class="signup-shell">
-            <aside class="brand-panel">
-                <div class="logo">
-                    <span class="logo-mark">L</span>
-                    <span>LinkNest</span>
-                </div>
+        <section class="form-panel">
+            <div class="form-shell">
+                <a class="brand" href="/login">
+                    <span class="brand-mark">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                        </svg>
+                    </span>
+                    Linkly
+                </a>
 
-                <div>
-                    <h1>Create cleaner links in seconds.</h1>
-                    <p>Shorten long URLs, keep your saved links organized, and track visits from one simple dashboard.</p>
-                </div>
+                <header class="welcome">
+                    <h1>Create your account</h1>
+                    <p>Start creating cleaner links and tracking every visit. It only takes a minute.</p>
+                </header>
 
-                <div class="metric-row" aria-label="Product highlights">
-                    <div class="metric">
-                        <strong>8</strong>
-                        <span>character links</span>
-                    </div>
-                    <div class="metric">
-                        <strong>Live</strong>
-                        <span>visit counts</span>
-                    </div>
-                    <div class="metric">
-                        <strong>Fast</strong>
-                        <span>redirects</span>
-                    </div>
-                </div>
-            </aside>
+                <% if (locals.error) { %>
+                    <div class="notice"><%= error %></div>
+                <% } %>
 
-            <section class="form-panel">
-                <h2>Sign up</h2>
-                <p>Set up your account and start shortening links right away.</p>
-
-                <form action="/user" method="POST">
-                    <% if (locals.error) { %>
-                        <div class="error-message"><%= error %></div>
-                    <% } %>
-
+                <form class="signup-form" action="/user" method="POST">
                     <div class="field">
-                        <label for="name">Name</label>
-                        <input type="text" name="name" id="name" placeholder="Your name" autocomplete="name" value="<%= locals.formData ? formData.name : '' %>" required>
+                        <label for="name">Full name</label>
+                        <div class="input-wrap">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="8" r="4"/>
+                                <path d="M4 21a8 8 0 0 1 16 0"/>
+                            </svg>
+                            <input type="text" name="name" id="name" placeholder="Your name" autocomplete="name" value="<%= locals.formData ? formData.name : "" %>" required autofocus>
+                        </div>
                     </div>
 
                     <div class="field">
-                        <label for="email">Email</label>
-                        <input type="email" name="email" id="email" placeholder="you@gmail.com" autocomplete="email" pattern="[A-Za-z0-9._%+\-]+@gmail\.com" title="Email must end with @gmail.com" value="<%= locals.formData ? formData.email : '' %>" required>
-                        <small>Use a valid Gmail address ending with @gmail.com.</small>
+                        <label for="email">Email address</label>
+                        <div class="input-wrap">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16v16H4z"/>
+                                <path d="m4 6 8 6 8-6"/>
+                            </svg>
+                            <input type="email" name="email" id="email" placeholder="you@example.com" autocomplete="email" value="<%= locals.formData ? formData.email : "" %>" required>
+                        </div>
                     </div>
 
                     <div class="field">
-                        <label for="password">Password</label>
-                        <input type="password" name="password" id="password" placeholder="Create a password" autocomplete="new-password" minlength="8" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}" title="Password must be at least 8 characters and include uppercase, lowercase, number, and symbol." required>
-                        <small>At least 8 characters with uppercase, lowercase, number, and symbol.</small>
+                        <div class="field-row">
+                            <label for="password">Password</label>
+                            <span class="field-hint">Minimum 8 characters</span>
+                        </div>
+                        <div class="input-wrap">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="4" y="10" width="16" height="11" rx="2"/>
+                                <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+                            </svg>
+                            <input type="password" name="password" id="password" placeholder="Create a strong password" autocomplete="new-password" minlength="8" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}" title="Use at least 8 characters with uppercase, lowercase, number, and symbol." required>
+                            <button class="password-toggle" type="button" onclick="togglePassword(this)">Show</button>
+                        </div>
+                        <div class="password-rules" aria-label="Password requirements">
+                            <span class="rule">Uppercase letter</span>
+                            <span class="rule">Lowercase letter</span>
+                            <span class="rule">Number</span>
+                            <span class="rule">Symbol</span>
+                        </div>
                     </div>
 
-                    <button type="submit">Create account</button>
+                    <button class="submit-button" type="submit">Create free account →</button>
                 </form>
 
-                <div class="footer-link">
-                    Already creating links? <a href="/">Go to dashboard</a>
-                </div>
-            </section>
+                <p class="login-link">Already have an account? <a href="/login">Sign in</a></p>
+            </div>
         </section>
+
+        <aside class="visual-panel">
+            <div class="visual-content">
+                <div class="eyebrow"><span></span>Free to get started</div>
+                <h2>Your links deserve a better home.</h2>
+                <p>Join Linkly and turn every long URL into a clean, trackable link built for better sharing.</p>
+
+                <div class="benefits">
+                    <div class="benefit"><span class="benefit-icon">✓</span>Unlimited short links</div>
+                    <div class="benefit"><span class="benefit-icon">↗</span>Live click tracking</div>
+                    <div class="benefit"><span class="benefit-icon">⌁</span>One organized dashboard</div>
+                </div>
+
+                <div class="quote-card">
+                    “Clean links make every campaign look more intentional—and knowing what people click makes the next one better.”
+                    <strong>The Linkly promise</strong>
+                </div>
+            </div>
+        </aside>
     </main>
+
+    <script>
+        function togglePassword(button) {
+            const input = document.getElementById("password");
+            const showing = input.type === "text";
+            input.type = showing ? "password" : "text";
+            button.textContent = showing ? "Show" : "Hide";
+        }
+    </script>
 </body>
 </html>
